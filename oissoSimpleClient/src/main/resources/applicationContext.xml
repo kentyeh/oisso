@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <import resource="applicationContext-mvc.xml"/>
+    <context:property-placeholder location="classpath:system.properties"/>
+    <context:annotation-config/>
+
+    
+    <bean id="consumerManager" class="org.openid4java.consumer.ConsumerManager" lazy-init="true">
+        <property name="associations">
+            <bean class="org.openid4java.consumer.InMemoryConsumerAssociationStore"/>
+        </property>
+        <property name="nonceVerifier">
+            <bean class="org.openid4java.consumer.InMemoryNonceVerifier">
+                <constructor-arg value="100000"/>
+            </bean>
+        </property>
+    </bean>
+    <!--Exchange Extension Attributes,Customed define your property-->
+    <util:map id="extAttrSchema" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="roles" value="http://www.oisso.com/schema/1.0/roles" />
+        <entry key="city" value="http://www.oisso.com/schema/1.0/city" />
+    </util:map> 
+</beans>

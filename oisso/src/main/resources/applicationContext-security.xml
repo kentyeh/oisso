@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:p="http://www.springframework.org/schema/p"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+    
+    <global-method-security pre-post-annotations="enabled" secured-annotations="disabled" jsr250-annotations="disabled"/>
+    
+    <!-- for Spring Security 3.1
+    <http pattern="/login" security="none" />
+    -->
+    <http auto-config="true" use-expressions="true" disable-url-rewriting="true">
+        <intercept-url pattern="/endpoint" access="permitAll" requires-channel="any"/>
+        <!--intercept-url parttern="/loginBeforeReturn" access="isAuthenticated()" requires-channel="any"/-->
+        <intercept-url pattern="/login" access="permitAll" requires-channel="any"/>
+        <intercept-url pattern="/j_spring_security_check" access="permitAll" requires-channel="any"/>
+        <intercept-url pattern="/j_spring_security_logout" access="permitAll" requires-channel="any"/>
+        <remember-me key="oisso"/>
+        <form-login login-page="/login" authentication-failure-url="/login?authfailed=true" default-target-url="/" always-use-default-target="false"/>
+        <logout invalidate-session="true" logout-success-url="/" logout-url="/j_spring_security_logout"/>
+        <!--My suggesttion is not to use session management, because user may has many application need to login.
+        <session-management invalid-session-url="/login?cause=expired" >
+            <concurrency-control max-sessions="10" expired-url="/login?cause=sessionExceed"/>
+        </session-management>
+        -->
+    </http>
+    
+    <!--Authenticated by Database-->
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider user-service-ref="userDetailService">
+            <password-encoder hash="plaintext"/>
+        </authentication-provider>
+    </authentication-manager>
+    <beans:bean id="userDetailService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+        <beans:property name="dataSource" ref="dataSource"/>
+        <beans:property name="authoritiesByUsernameQuery">
+            <beans:value><![CDATA[SELECT userid as USERNAME,authority as AUTHORITY FROM authorities WHERE userid=?]]>
+            </beans:value>
+        </beans:property>
+        <beans:property name="usersByUsernameQuery">
+            <beans:value><![CDATA[SELECT userid as USERNAME,password as PASSWORD,1 as ENABLED FROM users WHERE userid=?]]>
+            </beans:value>
+        </beans:property>
+        <beans:property name="usernameBasedPrimaryKey" value="false"/>
+    </beans:bean>
+</beans:beans>
