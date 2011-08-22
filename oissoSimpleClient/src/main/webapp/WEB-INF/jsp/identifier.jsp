@@ -1,9 +1,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@include file="meta.jsp" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<sec:authorize access="authenticated">
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>    
+<c:if test="${not empty userInfo}">
     <c:redirect url="/userinfo"/>
-</sec:authorize>
+</c:if>
 <!doctype html>
 <html>
     <head>

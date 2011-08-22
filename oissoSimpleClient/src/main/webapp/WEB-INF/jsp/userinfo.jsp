@@ -1,6 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@include file="meta.jsp" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 <!doctype html>
 <html>
     <head>
@@ -18,8 +18,8 @@
                         <tr><td><fmt:message key="userinfo.identifier"/></td><td>${userInfo.idenifier}</td></tr>
                     <tr><td><fmt:message key="userinfo.fullname"/></td><td>${userInfo.fullname}</td></tr>
                     <%--Extension Exchange Attribute--%>
-                    <tr><td><fmt:message key="city"/></td><td>${userInfo.city}</td></tr>
-                    <tr><td><fmt:message key="roles"/></td><td>${userInfo.roles}</td></tr>
+                    <tr><td><fmt:message key="userinfo.city"/></td><td>${userInfo.city}</td></tr>
+                    <tr><td><fmt:message key="userinfo.roles"/></td><td>${userInfo.roles}</td></tr>
                     </tbody>
                 </table>
             </section>
