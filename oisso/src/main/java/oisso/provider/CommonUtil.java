@@ -24,11 +24,16 @@ import org.slf4j.LoggerFactory;
 public class CommonUtil {
 
     private static Logger logger = LoggerFactory.getLogger(CommonUtil.class);
-//    private final static String[] OPENID_NS_SREG_FIELDS = new String[]{"nickname", "email", "fullname", "dob", "gender", "postcode", "country", "language", "timezone"};
+    private final static String[] OPENID_NS_SREG_FIELDS = new String[]{"nickname", "email", "fullname", "dob", "gender", "postcode", "country", "language", "timezone"};
     private static Map<String, String> sregSchema = new HashMap<String, String>();
 
     public static void setSregSchema(Map<String, String> sregSchema) {
-        CommonUtil.sregSchema = sregSchema;
+        CommonUtil.sregSchema.clear();
+        if (sregSchema != null && !sregSchema.isEmpty()) {
+            for (String sreg : OPENID_NS_SREG_FIELDS) {
+                CommonUtil.sregSchema.put(sreg, sregSchema.get(sreg));
+            }
+        }
     }
 
     public static String getContextPath(HttpServletRequest request) {
@@ -102,14 +107,16 @@ public class CommonUtil {
                     hasSreg = true;
                     SRegRequest sRegRequest = (SRegRequest) extensionRequestObject;
                     Map<String, String> simpleAttribute = new HashMap<String, String>();
-                    for (String regext : sregSchema.keySet()) {
-                        if (userAttribute.containsKey(regext)) {
-                            logger.debug("add Attribute {}:{}", regext, userAttribute.get(regext).toString());
-                            simpleAttribute.put(regext, userAttribute.get(regext).toString());
+                    for (String sreg : CommonUtil.OPENID_NS_SREG_FIELDS) {
+                        if (userAttribute.containsKey(sreg)) {
+                            logger.debug("add Attribute {}:{}", sreg, userAttribute.get(sreg).toString());
+                            simpleAttribute.put(sreg, userAttribute.get(sreg).toString());
                         }
                     }
-                    SRegResponse sRegResponse = SRegResponse.createSRegResponse(sRegRequest, simpleAttribute);
-                    authResponse.addExtension(sRegResponse);
+                    if (!simpleAttribute.isEmpty()) {
+                        SRegResponse sRegResponse = SRegResponse.createSRegResponse(sRegRequest, simpleAttribute);
+                        authResponse.addExtension(sRegResponse);
+                    }
                 } else {
                     logger.error("Cannot continue processing Simple Registration Extension. The object returned from the AuthRequest (of type {}) claims to be correct, but is not of type {} as expected.",
                             extensionRequestObject.getClass().getName());
