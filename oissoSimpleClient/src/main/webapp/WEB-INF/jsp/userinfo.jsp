@@ -11,7 +11,11 @@
     <body>
         <sec:authorize access="authenticated">
             <section role="page">
-                <header style="text-align:right"><span style="color:blue">${userInfo.nickname}</span>:<a href="${cp}/logout" role="button"><fmt:message key="userinfo.logout"/></a></header>
+                <header style="text-align:right">
+                    <span style="color:blue">${userInfo.nickname}</span>:
+                    <a href="${cp}/logout" role="button"><fmt:message key="userinfo.logout"/></a>&nbsp;|&nbsp;
+                    <a href="${applicationScope.providerLogoutUrl}" role="button"><fmt:message key="userinfo.provider.logout"/></a>
+                </header>
                 <table border="1" align="center"><caption style="white-space: nowrap"><fmt:message key="userinfo.caption"/></caption>
                     <colgroup><col align="right"/><col style="white-space: nowrap"/></colgroup>
                     <tbody>
