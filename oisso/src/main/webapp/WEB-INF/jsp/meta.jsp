@@ -23,7 +23,7 @@
 <c:set var="jQueryUI"><link rel="stylesheet" href="http://jqueryui.com/css/base.css" type="text/css" media="all" />
         <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/${jQueryUIVersion}/themes/base/jquery-ui.css" type="text/css" media="all"/>
         ${jQuery}
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/${JQueryUIVersion}/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/${jQueryUIVersion}/jquery-ui.min.js"></script>
         <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
         <script>
           $(function(){
