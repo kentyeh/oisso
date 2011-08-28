@@ -7,9 +7,11 @@
   response.setHeader("Cache-Control", "no-cache");
   response.setHeader("Content-Type", "text/html; charset=UTF-8");
 %>
-
 <%--Context path--%>
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
+
+<%--Logo--%>
+<c:set var="logo"><img src="${cp}/images/oisso.png"/></c:set>
 
 <%--Full path--%>
 <c:set var="fp">${pageContext.request.scheme}://${pageContext.request.serverName}<c:if test="${80 ne pageContext.request.localPort}">:${pageContext.request.localPort}</c:if>${cp}</c:set>

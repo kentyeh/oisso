@@ -41,13 +41,14 @@
                 </c:if>
                 <form action="${cp}/j_spring_security_check" method="post">
                     <table border="0" align="center"><tbody>
-                            <tr><td align="right"><label for="userid"><fmt:message key="login.account"/></label></td><td>
+                            <tr><td rowSpan="2">${logo}</td>
+                            	  <td align="right"><label for="userid"><fmt:message key="login.account"/></label></td><td>
                                     <input type="text" required aria-required="true" placeholder="<fmt:message key="login.account.placeholder"/>" aria-required="true" id="userid" name="j_username" value="${sessionScope.loginId}"/></td></tr>
                             <tr><td align="right"><label for="password"><fmt:message key="login.password"/></label></td><td>
                                     <input type="password" required aria-required="true" id="password" name="j_password"/></td></tr>
-                            <tr><td>&nbsp;</td><td><input id="rememberMe" name="_spring_security_remember_me" type="checkbox" value="true"/>
+                            <tr><td d colSpan="2">&nbsp;</td><td><input id="rememberMe" name="_spring_security_remember_me" type="checkbox" value="true"/>
                                     <label for="rememberMe"><fmt:message key="login.remeberMe"/></label></td>
-                            <tr><td colSpan="2" align="center"><input type="submit"/><span style="width:300px">&nbsp;</span>
+                            <tr><td colSpan="3" align="center"><input type="submit"/><span style="width:300px">&nbsp;</span>
                                     <input type="reset"/></td></tr>
                         </tbody></table>
                 </form>

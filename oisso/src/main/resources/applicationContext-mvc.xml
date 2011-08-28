@@ -18,6 +18,7 @@
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
     <!-- i18n end-->
     
+    <mvc:resources mapping="/images/**" location="/images/"/>
     <mvc:default-servlet-handler default-servlet-name="oisso"/>
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:order="1">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
