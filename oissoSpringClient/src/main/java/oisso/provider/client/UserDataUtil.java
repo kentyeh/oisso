@@ -80,7 +80,7 @@ public class UserDataUtil {
             //rs = pstmt.executeQuery();
             if (rs != null && rs.next()) {
                 sql = "UPDATE userdata set username=?,city=?,roles=?where userid=?";
-                pstmt2 = conn.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                pstmt2 = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 pstmt2.setString(1, fullname);
                 pstmt2.setString(2, city);
                 pstmt2.setString(3, roles);
@@ -89,7 +89,7 @@ public class UserDataUtil {
                 logger.debug("DB Data updated success");
             } else {
                 sql = "insert into userdata (userid,username,city,roles) values(?,?,?,?)";
-                pstmt2 = conn.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                pstmt2 = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 pstmt2.setString(1, userid);
                 pstmt2.setString(2, fullname);
                 pstmt2.setString(3, city);
