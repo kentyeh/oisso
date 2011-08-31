@@ -8,6 +8,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <!-- Define application's properties -->
+    <util:map id="appProperies" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="localeParam" value="locale" />
+    </util:map> 
+    
     <import resource="applicationContext-jdbc.xml"/>
     <import resource="applicationContext-mvc.xml"/>
     <import resource="applicationContext-security.xml"/>

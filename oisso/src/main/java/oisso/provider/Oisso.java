@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Map;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -36,11 +36,13 @@ public class Oisso {
     @Autowired
     @Qualifier("userAttributeFactory")
     UserAttributeFactory userDataFactory;
-    @Resource(name = "extAttrSchema")
+    @Value("#{extAttrSchema}")
     Map<String, String> extAttrSchema;
     @Autowired
     @Qualifier("messageAccessor")
     MessageSourceAccessor messageAccessor;
+    @Value("#{appProperies['localeParam']}")
+    String localParamName;
 
     @ExceptionHandler(UnsupportedEncodingException.class)
     public String handleUnsupportedEncodingException(HttpServletRequest request, UnsupportedEncodingException ex) {
@@ -50,9 +52,11 @@ public class Oisso {
 
     @RequestMapping("/")
     public String root(HttpServletRequest request, Principal principal) throws UnsupportedEncodingException {
+        boolean chgLocal = localParamName != null && !localParamName.isEmpty() && request.getParameter(localParamName) != null
+                && !request.getParameter(localParamName).isEmpty();
         if (principal == null) {
             return request.getParameterMap().isEmpty() ? "login" : String.format("redirect:/%s%s", ANONYMOUS_ACCOUNT, CommonUtil.getParameters(request));
-        } else if (request.getParameterMap().isEmpty()) {
+        } else if (request.getParameterMap().isEmpty() || (chgLocal && request.getParameterMap().size() == 1)) {
             String account = principal.getName();
             HttpSession session = request.getSession(true);
             if (session.getAttribute(USER_INFO) == null) {
@@ -84,7 +88,7 @@ public class Oisso {
                 return String.format("redirect:/%s%s", account, CommonUtil.getParameters(request));
             }
             request.setAttribute(USER_INPUT_ACCOUNT, account);
-        } 
+        }
         if (request.getParameterMap().isEmpty()) {
             logger.debug("RequestURI is {},return a xrds definition.", request.getRequestURI());
             return "xrds";
