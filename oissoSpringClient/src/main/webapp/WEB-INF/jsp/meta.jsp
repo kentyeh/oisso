@@ -14,7 +14,7 @@
 <c:set var="fp">${pageContext.request.scheme}://${pageContext.request.serverName}<c:if test="${80 ne pageContext.request.localPort}">:${pageContext.request.localPort}</c:if>${cp}</c:set>
 
 <%--JQuery--%>
-<c:set var="jQueryVersion" value="1.6.2"/>
+<c:set var="jQueryVersion" value="1.6.3"/>
 <c:set var="jQuery"><script src="http://ajax.googleapis.com/ajax/libs/jquery/${jQueryVersion}/jquery.min.js"></script></c:set>
 <%--Modernizr 2--%>
 <c:set var="Modernizr"><script src="http://www.modernizr.com/downloads/modernizr-latest.js"></script></c:set>

@@ -17,12 +17,12 @@
 <c:set var="fp">${pageContext.request.scheme}://${pageContext.request.serverName}<c:if test="${80 ne pageContext.request.localPort}">:${pageContext.request.localPort}</c:if>${cp}</c:set>
 
 <%--JQuery--%>
-<c:set var="jQueryVersion" value="1.6.2"/>
+<c:set var="jQueryVersion" value="1.6.3"/>
 <c:set var="jQuery"><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/${jQueryVersion}/jquery.min.js"></script></c:set>
 
 <%--JQueryUi with theme roller--%>
 <%--Note: jQuery not allow hot-linking,http://blog.jquery.com/2010/12/30/hotlinking-to-be-disabled-on-jan-31-2011/ --%>
-<c:set var="jQueryUIVersion" value="1.8.15"/>
+<c:set var="jQueryUIVersion" value="1.8.16"/>
 <c:set var="jQueryUI">
         <%--link rel="stylesheet" href="http://jqueryui.com/css/base.css" type="text/css" media="all" /--%>
         <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/${jQueryUIVersion}/themes/base/jquery-ui.css" type="text/css" media="all"/>
