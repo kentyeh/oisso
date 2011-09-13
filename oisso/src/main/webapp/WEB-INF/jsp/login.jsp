@@ -15,12 +15,14 @@
                 window.onload=function(){
                     if(!Modernizr.input.required) {
                         $("form:first").submit(function(){
-                            if($("userid").val().length<0){
-                                $("msgArea").val("<fmt:message key="login.account"/><fmt:message key="login.notAllowEmpty"/>");
+                            if($("#userid").val().length==0){
+                                $("#msgArea").text("<fmt:message key="login.account"/><fmt:message key="login.notAllowEmpty"/>");
+                                $("#userid").focus();
                                 return false;
                             }
-                            if($("password").val().length<0){
-                                $("msgArea").val("<fmt:message key="login.password"/><fmt:message key="login.notAllowEmpty"/>");
+                            if($("#password").val().length==0){
+                                $("#msgArea").text("<fmt:message key="login.password"/><fmt:message key="login.notAllowEmpty"/>");
+                                $("#password").focus();
                                 return false;
                             }
                         });
@@ -31,14 +33,14 @@
         <body>
             <section data="page">
                 <header style="text-align: center"><fmt:message key="login.caption"/></header>
-                <c:if test="${not empty param.cause or not empty param.authfailed or not empty requestScope.errorMessage}">
-                    <div align="center" style="color:red;font-weight:bold;text-align: center" id="msgArea">
+                <div align="center" style="color:red;font-weight:bold;text-align:center" id="msgArea">
+                    <c:if test="${not empty param.cause or not empty param.authfailed or not empty requestScope.errorMessage}">
                         <c:if test="${'expired' eq param.cause}"><fmt:message key="login.expired"/></c:if>
                         <c:if test="${'sessionExceed' eq param.cause}"><fmt:message key="login.sessionExceed"/></c:if>
                         <c:if test="${not empty param.authfailed}"><fmt:message key="error.exception"/> : ${SPRING_SECURITY_LAST_EXCEPTION.message}</c:if>
-                        <c:if test="${not empty requestScope.errorMessage}">${requestScope.errorMessage}</c:if>                                        
-                    </div>
-                </c:if>
+                        <c:if test="${not empty requestScope.errorMessage}">${requestScope.errorMessage}</c:if>
+                    </c:if>                                        
+                </div>
                 <form action="${cp}/j_spring_security_check" method="post">
                     <table border="0" align="center"><tbody>
                             <tr><td rowSpan="2">${logo}</td>
