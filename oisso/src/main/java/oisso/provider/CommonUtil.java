@@ -139,7 +139,12 @@ public class CommonUtil {
                                 logger.debug("add extended attribute {}:{}", key, userAttribute.get(key).toString());
                                 axData.put(key, userAttribute.get(key).toString());
                                 String schema = sregSchema.get(key);
-                                fetchResponse.addAttribute(key, StringUtils.hasText(schema) ? schema : extensionAttrSchema.get(key), userAttribute.get(key).toString());
+                                if (!StringUtils.hasText(schema)) {
+                                    schema = extensionAttrSchema.get(key);
+                                }
+                                if (StringUtils.hasText(schema)) {
+                                    fetchResponse.addAttribute(key, schema, userAttribute.get(key).toString());
+                                }
                             }
                         }
                     }
