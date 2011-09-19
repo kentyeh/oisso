@@ -11,6 +11,7 @@ import org.openid4java.message.AuthSuccess;
 import org.openid4java.message.Message;
 import org.openid4java.message.MessageExtension;
 import org.openid4java.message.ParameterList;
+import org.openid4java.message.Parameter;
 import org.openid4java.message.ax.AxMessage;
 import org.openid4java.message.ax.FetchRequest;
 import org.openid4java.message.ax.FetchResponse;
@@ -20,6 +21,7 @@ import org.openid4java.message.sreg.SRegResponse;
 import org.openid4java.server.ServerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class CommonUtil {
 
@@ -98,13 +100,11 @@ public class CommonUtil {
         Message authResponse = serverManager.authResponse(requestParameters, userSelectedId, userSelectedClaimedId, true);
         AuthRequest authRequest = null;
         try {
-            boolean hasSreg = false;
             authRequest = AuthRequest.createAuthRequest(requestParameters, serverManager.getRealmVerifier());
             logger.debug("Processing Simple Registration attributes…");
             if (authRequest.hasExtension(SRegMessage.OPENID_NS_SREG)) {
                 MessageExtension extensionRequestObject = authRequest.getExtension(SRegMessage.OPENID_NS_SREG);
                 if (extensionRequestObject instanceof SRegRequest) {
-                    hasSreg = true;
                     SRegRequest sRegRequest = (SRegRequest) extensionRequestObject;
                     Map<String, String> simpleAttribute = new HashMap<String, String>();
                     for (String sreg : CommonUtil.OPENID_NS_SREG_FIELDS) {
@@ -131,22 +131,16 @@ public class CommonUtil {
                     ParameterList parameters = axRequest.getParameters();
                     Map<String, String> axData = new HashMap<String, String>();
                     fetchResponse = FetchResponse.createFetchResponse(axRequest, axData);
-                    //Because Spring Security default not recorgnizing simple registration, so we need to translate it to Ax Message;
-                    if (!hasSreg) {
-                        for (String key : sregSchema.keySet()) {
-                            Object value = userAttribute.get(key);
-                            if (value != null) {
-                                logger.debug("add simple registration attribute {}:{}", key, userAttribute.get(key).toString());
-                                axData.put(key, sregSchema.get(key));
-                                fetchResponse.addAttribute(key, sregSchema.get(key), value.toString());
+                    for (Object o : parameters.getParameters()) {
+                        Parameter param = (Parameter) o;
+                        if (param.getKey().startsWith("type.")) {
+                            String key = param.getKey().substring(5);
+                            if (userAttribute.containsKey(key)) {
+                                logger.debug("add extended attribute {}:{}", key, userAttribute.get(key).toString());
+                                axData.put(key, userAttribute.get(key).toString());
+                                String schema = sregSchema.get(key);
+                                fetchResponse.addAttribute(key, StringUtils.hasText(schema) ? schema : extensionAttrSchema.get(key), userAttribute.get(key).toString());
                             }
-                        }
-                    }
-                    for (String key : extensionAttrSchema.keySet()) {
-                        if (parameters.hasParameter("type." + key)) {
-                            logger.debug("add extended attribute {}:{}", key, userAttribute.get(key).toString());
-                            axData.put(key, userAttribute.get(key).toString());
-                            fetchResponse.addAttribute(key, extensionAttrSchema.get(key), userAttribute.get(key).toString());
                         }
                     }
                     authResponse.addExtension(fetchResponse);

@@ -49,7 +49,7 @@
     
     <!--Correct version (3.0.6+) not support spring-security-redirect parameter problem-->
     <beans:bean id="logoutSuccessHandler" class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler" 
-        p:defaultTargetUrl="/index">
+        p:defaultTargetUrl="/login">
         <beans:property name="targetUrlParameter">
             <util:constant static-field="org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler.DEFAULT_TARGET_PARAMETER"/>
         </beans:property>
