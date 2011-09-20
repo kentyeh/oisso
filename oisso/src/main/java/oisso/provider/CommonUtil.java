@@ -138,10 +138,8 @@ public class CommonUtil {
                             if (userAttribute.containsKey(key)) {
                                 logger.debug("add extended attribute {}:{}", key, userAttribute.get(key).toString());
                                 axData.put(key, userAttribute.get(key).toString());
-                                String schema = sregSchema.get(key);
-                                if (!StringUtils.hasText(schema)) {
-                                    schema = extensionAttrSchema.get(key);
-                                }
+                                String schema = sregSchema.keySet().contains(key) ? sregSchema.get(key)
+                                        : extensionAttrSchema.keySet().contains(key) ? extensionAttrSchema.get(key) : null;
                                 if (StringUtils.hasText(schema)) {
                                     fetchResponse.addAttribute(key, schema, userAttribute.get(key).toString());
                                 }

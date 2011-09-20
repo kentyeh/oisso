@@ -17,7 +17,7 @@
         <!--intercept-url pattern="/userinfo" access="isAuthenticated()" requires-channel="any"/-->
         <intercept-url pattern="/userinfo" access="hasRole('ROLE_USER')" requires-channel="any"/>
         <intercept-url pattern="/*" access="permitAll" requires-channel="any"/>
-        <openid-login login-page="/identifier" login-processing-url="/j_spring_openid_security_check" user-service-ref="openIdUserService" >
+        <openid-login login-page="/identifier" authentication-failure-url="/error?authfailed=true"  login-processing-url="/j_spring_openid_security_check" user-service-ref="openIdUserService" >
             <attribute-exchange>
                 <!--http://www.hyves-developers.nl/documentation/openid/specifications--> 
                 <!--Because of spring security not support Simple Registration Attribute,
