@@ -70,7 +70,7 @@ public class Oisso {
 
     @RequestMapping("/login")
     public String login(HttpServletRequest request, Principal principal) throws UnsupportedEncodingException {
-        return root(request, principal);
+        return principal==null||"anonymous".equals(principal.getName())?"login":root(request, principal);
     }
 
     @RequestMapping("/{account}")
