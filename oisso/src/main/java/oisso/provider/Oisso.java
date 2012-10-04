@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class Oisso {
 
     private static Logger logger = LoggerFactory.getLogger(Oisso.class);
-    public static String ANONYMOUS_ACCOUNT = "anonymous";
-    public static String USER_INPUT_ACCOUNT = "account";
-    public static String USER_INFO = "userInfo";
+    public final static String ANONYMOUS_ACCOUNT = "anonymous";
+    public final static String USER_INPUT_ACCOUNT = "account";
+    public final static String USER_INFO = "userInfo";
     @Autowired
     @Qualifier("serverManager")
     private ServerManager serverManager;
@@ -99,7 +99,7 @@ public class Oisso {
                 Message message = serverManager.associationResponse(new ParameterList(request.getParameterMap()));
                 response.setContentType("text/plain");
                 OutputStream out = response.getOutputStream();
-                out.write(message.keyValueFormEncoding().getBytes());
+                out.write(message.keyValueFormEncoding().getBytes("UTF-8"));
                 out.close();
                 return null;
             } else if ("checkid_immediate".equals(mode) || "checkid_setup".equals(mode) || "check_authentication".equals(mode)) {
