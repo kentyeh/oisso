@@ -128,6 +128,7 @@ public class Oisso {
         if (session != null) {
             session.removeAttribute("loginId");
         }
+        ParameterList parameterList = (ParameterList) session.getAttribute("parameterList");
         String userId = principal.getName();
         String identifier = request.getParameter("account");
         identifier = identifier == null || identifier.isEmpty() ? "anonymous" : identifier;
@@ -135,8 +136,9 @@ public class Oisso {
         logger.debug("returnAfterLogin:user is {} & account is \"{}\"", userId, identifier);
         String oPEndpointUrl = CommonUtil.getContextPath(request) + "/" + identifier;
         serverManager.setOPEndpointUrl(oPEndpointUrl);
-        Message authResponse = CommonUtil.buildAuthResponse(serverManager, new ParameterList(request.getParameterMap()),
+        Message authResponse = CommonUtil.buildAuthResponse(serverManager, parameterList,
                 oPEndpointUrl, oPEndpointUrl, userDataFactory.getUserAttribute(userId), extAttrSchema);
+        session.removeAttribute("parameterList");
         if (authResponse instanceof AuthSuccess) {
             String redir = authResponse.getDestinationUrl(true);
             logger.debug("redirect url to {}", redir);
