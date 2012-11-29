@@ -3,11 +3,14 @@ package oisso.provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Map;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.openid4java.message.AuthSuccess;
 import org.openid4java.message.Message;
 import org.openid4java.message.ParameterList;
 import org.openid4java.server.ServerManager;
@@ -70,7 +73,7 @@ public class Oisso {
 
     @RequestMapping("/login")
     public String login(HttpServletRequest request, Principal principal) throws UnsupportedEncodingException {
-        return principal==null||"anonymous".equals(principal.getName())?"login":root(request, principal);
+        return principal == null || "anonymous".equals(principal.getName()) ? "login" : root(request, principal);
     }
 
     @RequestMapping("/{account}")
@@ -95,17 +98,20 @@ public class Oisso {
         } else {
             logger.debug("RequestURI is {}{}", request.getRequestURI(), CommonUtil.getParameters(request));
             String mode = request.getParameter("openid.mode");
-            if ("associate".equals(mode)) {
-                Message message = serverManager.associationResponse(new ParameterList(request.getParameterMap()));
+            if ("associate".equals(mode) || "check_authentication".equals(mode)) {
+                Message message = "associate".equals(mode)
+                        ? serverManager.associationResponse(new ParameterList(request.getParameterMap()))
+                        : serverManager.verify(new ParameterList(request.getParameterMap()));
                 response.setContentType("text/plain");
                 OutputStream out = response.getOutputStream();
                 out.write(message.keyValueFormEncoding().getBytes("UTF-8"));
                 out.close();
                 return null;
-            } else if ("checkid_immediate".equals(mode) || "checkid_setup".equals(mode) || "check_authentication".equals(mode)) {
+            } else if ("checkid_immediate".equals(mode) || "checkid_setup".equals(mode)) {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("loginId", account);
-                return "redirect:/loginBeforeReturn" + CommonUtil.getParameters(request, "account=" + account);
+                session.setAttribute("parameterList", new ParameterList(request.getParameterMap()));
+                return "redirect:/loginBeforeReturn?account=" + URLEncoder.encode(account, "UTF-8");
             } else {
                 if (mode != null && !mode.isEmpty()) {
                     request.setAttribute("errorMessage", String.format("%s:%s", messageAccessor.getMessage("oisso.unknown.open.mode"), mode));
@@ -117,7 +123,7 @@ public class Oisso {
 
     @RequestMapping("/loginBeforeReturn")
     @PreAuthorize("isAuthenticated()")
-    public String returnAfterLogin(HttpServletRequest request, Principal principal) {
+    public String returnAfterLogin(HttpServletRequest request, HttpServletResponse response, Principal principal) throws IOException {
         HttpSession session = request.getSession();
         if (session != null) {
             session.removeAttribute("loginId");
@@ -131,8 +137,15 @@ public class Oisso {
         serverManager.setOPEndpointUrl(oPEndpointUrl);
         Message authResponse = CommonUtil.buildAuthResponse(serverManager, new ParameterList(request.getParameterMap()),
                 oPEndpointUrl, oPEndpointUrl, userDataFactory.getUserAttribute(userId), extAttrSchema);
-        String redir = authResponse.getDestinationUrl(true);
-        logger.debug("redirect url to {}", redir);
-        return String.format("redirect:%s", redir);
+        if (authResponse instanceof AuthSuccess) {
+            String redir = authResponse.getDestinationUrl(true);
+            logger.debug("redirect url to {}", redir);
+            return String.format("redirect:%s", redir);
+        } else {
+            ServletOutputStream os = response.getOutputStream();
+            os.write(authResponse.keyValueFormEncoding().getBytes());
+            os.close();
+            return null;
+        }
     }
 }
