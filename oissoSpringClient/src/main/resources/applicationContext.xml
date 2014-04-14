@@ -4,21 +4,35 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-
-    <import resource="applicationContext-jdbc.xml"/>
-    <import resource="applicationContext-security.xml"/>
-    <import resource="applicationContext-mvc.xml"/>
-    <context:property-placeholder location="classpath:system.properties"/>
-    <context:annotation-config/>
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+    <!--support JSR-250-->
+    <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
     
-    <!--Exchange Extension Attributes,Customed define your property-->
+    <jee:jndi-lookup id="dataSource" jndi-name="${jndiDataSource}" resource-ref="true" 
+        cache="true" lookup-on-startup="false" expected-type="javax.sql.DataSource"/>
+    
+    <import resource="applicationContext-mvc.xml"/>
+    <import resource="applicationContext-security.xml"/>
+    
+    <context:property-placeholder location="classpath:system.properties"/>
+    
+    <util:map id="appProperies" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="httpPort" value="${httpPort}" />
+        <entry key="localeParam" value="locale" />
+    </util:map> 
+    
+    <!--Exchange Extension Attributes,Customed define your property
+        填入交換的屬性-->
     <util:map id="extAttrSchema" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
         <entry key="nickname" value="http://axschema.org/namePerson/friendly"/>
         <entry key="fullname" value="http://axschema.org/contact/email"/>
-        <entry key="roles" value="http://www.oisso.com/schema/1.0/roles" />
         <entry key="city" value="http://www.oisso.com/schema/1.0/city" />
+        <!--With customed roles and just ignore those from openid servers. 
+            使用自訂角色，而不使用OpenId主機的-->
+        <!--<entry key="roles" value="http://www.oisso.com/schema/1.0/roles" />-->
     </util:map> 
 </beans>

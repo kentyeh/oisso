@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
 import javax.sql.DataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component("userAttributeFactory")
 public class CustomeDefinedAttributeProperty implements UserAttributeFactory {
 
-    private static Logger logger = LoggerFactory.getLogger(CustomeDefinedAttributeProperty.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CustomeDefinedAttributeProperty.class);
     @Autowired
     @Qualifier("dataSource")
     private DataSource dataSource;
@@ -30,7 +29,12 @@ public class CustomeDefinedAttributeProperty implements UserAttributeFactory {
     public Map<String, String> getUserAttribute(String userid) {
         return getInfoFromDB ? getAttributeFromDB(userid) : getRolesFromSpringSecurity(userid);
     }
-
+    /**
+     * If no need extra attribute except ROLE,you can get they from Spring.<br>
+     * 如果只要角色而不需其它屬性，可直接由Spring取得。
+     * @param userid 用戶編號
+     * @return 
+     */
     private Map<String, String> getRolesFromSpringSecurity(String userid) {
         Map<String, String> result = new HashMap<String, String>();
         StringBuilder roles = new StringBuilder();
@@ -51,7 +55,12 @@ public class CustomeDefinedAttributeProperty implements UserAttributeFactory {
         result.put("roles", roles.toString());
         return result;
     }
-
+    /**
+     * User's attributes from DB.<br>
+     * 從資料庫取得用戶的屬性
+     * @param userid 用戶編號
+     * @return 
+     */
     private Map<String, String> getAttributeFromDB(String userid) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -68,6 +77,7 @@ public class CustomeDefinedAttributeProperty implements UserAttributeFactory {
             while (rs.next()) {
                 if (nickname == null) {
                     //I put userid into nickname,or you can define another exchange extension attribute 
+                    //使用nickname作為userid，您也可額外自定其它的交換屬性
                     nickname = userid;
                     result.put("nickname", nickname);
                     result.put("fullname", rs.getString("username"));

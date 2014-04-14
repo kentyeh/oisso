@@ -13,6 +13,7 @@ public class ApplicationContext implements ServletContextAware {
     @Value("${openid.provider.logoutUrl}")
     private String logoutUrl;
 
+    @Override
     public void setServletContext(ServletContext servletContext) {
         servletContext.setAttribute("providerLogoutUrl", logoutUrl);
     }

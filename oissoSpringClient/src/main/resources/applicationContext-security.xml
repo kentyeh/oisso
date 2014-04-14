@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
-            xmlns:beans="http://www.springframework.org/schema/beans"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:p="http://www.springframework.org/schema/p"
-            xmlns:aop="http://www.springframework.org/schema/aop"
-            xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-    <!--spring security version before 3.1.x start-->
-    <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <beans:bean class="oisso.provider.client.OpenIDAopAuthenticationProvider"/>
-    <!--spring security version before 3.1.x end-->
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:c="http://www.springframework.org/schema/c"
+             xmlns:p="http://www.springframework.org/schema/p"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+    <!--chnage enabled to activate funtionality,如需開放相關功能，將值設為enabled-->
     <global-method-security pre-post-annotations="disabled" secured-annotations="disabled" jsr250-annotations="disabled"/>
     
-    <http auto-config="true" use-expressions="true" disable-url-rewriting="true">
+    <http auto-config="true" use-expressions="true" disable-url-rewriting="true" entry-point-ref="authEntryPoint">
         <!--intercept-url pattern="/userinfo" access="isAuthenticated()" requires-channel="any"/-->
         <intercept-url pattern="/userinfo" access="hasRole('ROLE_USER')" requires-channel="any"/>
-        <intercept-url pattern="/*" access="permitAll" requires-channel="any"/>
-        <openid-login login-page="/identifier" authentication-failure-url="/error?authfailed=true"  login-processing-url="/j_spring_openid_security_check" user-service-ref="openIdUserService" >
+        <intercept-url pattern="/j_spring_security_check" access="permitAll" requires-channel="any"/>
+        <intercept-url pattern="/**" access="permitAll" requires-channel="http"/>
+        <openid-login login-page="/identifier" authentication-failure-url="/error?authfailed=true"  
+                      login-processing-url="/j_spring_openid_security_check" default-target-url="/userinfo"  
+                      user-service-ref="openIdUserService" >
             <attribute-exchange>
                 <!--http://www.hyves-developers.nl/documentation/openid/specifications--> 
                 <!--Because of spring security not support Simple Registration Attribute,
-                    So nickname & fullname need to exchange by a Ax-->       
+                So nickname & fullname need to exchange by a Ax-->       
                 <openid-attribute name="nickname" type="http://axschema.org/namePerson/friendly" required="true" />
                 <openid-attribute name="fullname" type="http://axschema.org/namePerson" required="false" />
                 <openid-attribute name="city" type="http://www.oisso.com/schema/1.0/city" required="false" />
-                <openid-attribute name="roles" type="http://www.oisso.com/schema/1.0/roles" required="false" />
+                <!--<openid-attribute name="roles" type="http://www.oisso.com/schema/1.0/roles" required="false" />-->
             </attribute-exchange>
         </openid-login>
         <logout invalidate-session="true" logout-success-url="/" logout-url="/j_spring_security_logout"/>
-        <remember-me key="oisso"/>
-        <session-management invalid-session-url="/identifier?cause=expired">
+        <remember-me key="${artifactId}"/>
+        <anonymous key="${artifactId}" username="anonymous"/>
+        <session-management session-fixation-protection="none">
             <!--concurrency-control max-sessions="10" expired-url="/identifier?cause=sessionExceed"/-->
         </session-management>
+        <!--Http 403,404 report page. 權限不足403,404時導向網址-->
+        <access-denied-handler error-page="/error?accessDeined=true"/>
+        <!-- http://spring.io/blog/2013/08/21/spring-security-3-2-0-rc1-highlights-csrf-protection/ -->
+        <csrf/>
+        <headers>
+            <cache-control/>
+            <content-type-options/>
+            <frame-options/>
+            <!--<hsts/>-->
+            <xss-protection/>
+        </headers>
     </http>
     <authentication-manager alias="authenticationManager" />
+    <beans:bean id="authEntryPoint" class="oisso.provider.client.AjaxAwareLoginUrlAuthenticationEntryPoint" scope="singleton" c:loginFormUrl="/identifier" />
 </beans:beans>

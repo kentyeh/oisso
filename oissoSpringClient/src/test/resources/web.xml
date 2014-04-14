@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>Open Id Spring Security Client</display-name>
+    <display-name>${pom.artifactId} - Open Id Spring Security Client</display-name>
     <context-param>
         <description>Spring Configuration</description>
         <param-name>contextConfigLocation</param-name>
@@ -13,7 +13,7 @@
     </context-param>
 
     <filter>
-        <description>Page Encoding</description>
+        <description>Specify a character encoding for requests</description>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
         <init-param>
@@ -40,9 +40,9 @@
     <listener>
         <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
     </listener>
-  <!-- Servlets -->
+    <!-- Servlets -->
     <servlet>
-        <servlet-name>springClient</servlet-name>
+        <servlet-name>${pom.artifactId}</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
@@ -52,13 +52,51 @@
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>springClient</servlet-name>
+        <servlet-name>${pom.artifactId}</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.js</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.gif</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.png</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.html</url-pattern>
+    </servlet-mapping>
 
-  <!--Default page to serve
-    <welcome-file-list>
-        <welcome-file>/index</welcome-file>
-    </welcome-file-list>
-  -->
+    <!--Default page to serve
+      <welcome-file-list>
+          <welcome-file>/index</welcome-file>
+      </welcome-file-list>
+    -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error?errorCode=404</location>
+    </error-page>
+    <resource-ref>
+        <description>Jndi Data Source</description>
+        <res-ref-name>${jndiDataSource}</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
 </web-app>

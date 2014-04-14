@@ -19,15 +19,18 @@ import org.openid4java.message.sreg.SRegMessage;
 import org.openid4java.message.sreg.SRegRequest;
 import org.openid4java.message.sreg.SRegResponse;
 import org.openid4java.server.ServerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.openid4java.association.AssociationException;
+import org.openid4java.message.MessageException;
+import org.openid4java.server.ServerException;
 import org.springframework.util.StringUtils;
 
 public class CommonUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(CommonUtil.class);
+    private static final Logger logger = LogManager.getLogger(CommonUtil.class);
     private final static String[] OPENID_NS_SREG_FIELDS = new String[]{"nickname", "email", "fullname", "dob", "gender", "postcode", "country", "language", "timezone"};
-    private static Map<String, String> sregSchema = new HashMap<String, String>();
+    private static final Map<String, String> sregSchema = new HashMap<String, String>();
 
     public static void setSregSchema(Map<String, String> sregSchema) {
         CommonUtil.sregSchema.clear();
@@ -39,7 +42,7 @@ public class CommonUtil {
     }
 
     public static String getContextPath(HttpServletRequest request) {
-        StringBuffer pb = new StringBuffer();
+        StringBuilder pb = new StringBuilder();
         pb.append(request.getScheme()).append("://").append(request.getServerName());
         if (request.getLocalPort() != 80) {
             pb.append(":").append(request.getLocalPort());
@@ -84,11 +87,10 @@ public class CommonUtil {
             }
         }
         if (additionalParams != null && !additionalParams.isEmpty()) {
-            for (String para : additionalParams.keySet()) {
-                sb.append(sb.length() == 0 ? "?" : "&").append(para).append("=");
-                String value = additionalParams.get(para);
-                if (value != null && !value.isEmpty()) {
-                    sb.append(URLEncoder.encode(value, "UTF-8"));
+            for (Map.Entry<String,String> para : additionalParams.entrySet()){
+                sb.append(sb.length() == 0 ? "?" : "&").append(para.getKey()).append("=");
+                if (StringUtils.hasText(para.getValue())) {
+                    sb.append(URLEncoder.encode(para.getValue(), "UTF-8"));
                 }
             }
         }
@@ -153,7 +155,11 @@ public class CommonUtil {
                 }
             }
             serverManager.sign((AuthSuccess) authResponse);
-        } catch (Exception e) {
+        } catch (AssociationException e) {
+            logger.error("fault prone when building AuthRequest with :", e);
+        } catch (MessageException e) {
+            logger.error("fault prone when building AuthRequest with :", e);
+        } catch (ServerException e) {
             logger.error("fault prone when building AuthRequest with :", e);
         }
         return authResponse;

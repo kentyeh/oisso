@@ -5,38 +5,65 @@
 
     <groupId>openid.semi-provider</groupId>
     <artifactId>oisso</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
     <packaging>war</packaging>
 
     <name>OpenId Semi-Provider</name>
 
     <properties>
+        <jndiDataSource>jdbc/OISSO</jndiDataSource>
+        <httpPort>8080</httpPort>
+        <sslPort>8443</sslPort>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.optimize>true</maven.compiler.optimize>
-        <spring.version>3.1.3.RELEASE</spring.version>
-        <spring.security.version>3.1.3.RELEASE</spring.security.version>
-        <openid4java.version>0.9.6</openid4java.version>
+        <spring.version>4.0.3.RELEASE</spring.version>
+        <spring.security.version>3.2.3.RELEASE</spring.security.version>
+        <openid4java.version>0.9.8</openid4java.version>
+        <log4j.version>2.0-rc1</log4j.version> 
+        <disruptor.version>3.2.1</disruptor.version>
     </properties>
     
     <dependencies>
-         <dependency>
-                 <groupId>org.springframework</groupId>
-                 <artifactId>spring-aop</artifactId>
+        <!--Log4j2 start-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
+        </dependency>
+        <!--Log4j2 end-->
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
-           <exclusions>
-              <exclusion>
-                 <groupId>org.springframework</groupId>
-                 <artifactId>spring-aop</artifactId>
-              </exclusion>
-           </exclusions>
         </dependency>
         
         <!--Spring JDBC Library,Remove if you never validate user by database.-->
@@ -58,39 +85,30 @@
             <version>${spring.security.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-openid</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.openid4java</groupId>
-            <artifactId>openid4java-nodeps</artifactId>
+            <artifactId>openid4java</artifactId>
             <version>${openid4java.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-openid</artifactId>
+            <version>${spring.security.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openid4java</groupId>
+                    <artifactId>openid4java-nodeps</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>2.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.2.2</version>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.2.2</version>
+            <version>4.3.3</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -103,131 +121,66 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency> 
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        
-        <!--Database configuration start,If you don't need, remve this section-->
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <!--Config database driver here-->
-        <!--dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.0-801.jdbc4</version>
-        </dependency-->
-        <!--Database configuration end.-->
-        
-        <!--Test library dependencies start.-->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.3.168</version>
-            <!--scope>test</scope-->
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>1.3</version>
-            <scope>test</scope> 
-        </dependency>
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-legacy</artifactId>
-            <version>2.5.1</version>
-            <scope>test</scope>
-        </dependency>
-        <!--Test library dependencies end.-->
     </dependencies>
 
     <build>
         <finalName>${pom.artifactId}</finalName>
-        <plugins>          
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>*.sql</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>    
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.2</version>  
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>   
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
-                    <effort>Max</effort>
-                    <xmlOutput>true</xmlOutput>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <showDeprecation>true</showDeprecation>
+                    <optimize>true</optimize>
+                </configuration>
+            </plugin> 
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.7.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                            <goal>cpd-check</goal>
-                        </goals>
-                    </execution>
-                </executions>   
-                <configuration>                       
-                    <targetJdk>${maven.compiler.target}</targetJdk>
-                    <linkXref>true</linkXref>
-                    <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                    <minimumTokens>100</minimumTokens>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <minmemory>128m</minmemory>
+                    <maxmemory>512</maxmemory>
+                    <breakiterator>true</breakiterator>
+                    <failOnError>false</failOnError>
+                    <quiet>true</quiet>
+                    <source>${maven.compiler.source}</source>
                     <verbose>false</verbose>
+                    <linksource>true</linksource>
+                    <local>zh</local>
+                    <links>
+                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
+                        <link>http://docs.oracle.com/javaee/7/api/</link> 
+                        <link>http://docs.spring.io/spring/docs/current/javadoc-api/</link>
+                        <link>http://docs.spring.io/spring-security/site/docs/current/apidocs/</link>
+                        <link>http://docs.spring.io/spring-mobile/docs/current/api/</link>
+                        <link>http://docs.jboss.org/hibernate/stable/core/javadocs/</link>
+                        <link>http://jdbi.org/apidocs/</link>
+                        <link>http://logging.apache.org/log4j/2.x/log4j-api/apidocs/</link>
+                        <link>http://logging.apache.org/log4j/2.x/log4j-core/apidocs/</link>
+                    </links>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>dashboard-maven-plugin</artifactId>
-               <version>1.0.0-beta-1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.7.1</version> 
-                <configuration>
-                    <linkXref>true</linkXref>
-                    <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                    <minimumTokens>100</minimumTokens>
-                    <targetJdk>${maven.compiler.target}</targetJdk>
-                    <verbose>true</verbose>
-                </configuration>
-            </plugin>
-        </plugins>
-  </reporting>
-
 </project>

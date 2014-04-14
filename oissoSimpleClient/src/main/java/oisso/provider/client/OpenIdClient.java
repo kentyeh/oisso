@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.jdom.IllegalAddException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openid4java.association.AssociationException;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
@@ -24,8 +25,6 @@ import org.openid4java.message.ax.FetchResponse;
 import org.openid4java.message.sreg.SRegMessage;
 import org.openid4java.message.sreg.SRegRequest;
 import org.openid4java.message.sreg.SRegResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class OpenIdClient {
 
-    private static Logger logger = LoggerFactory.getLogger(OpenIdClient.class);
+    private static final Logger logger = LogManager.getLogger(OpenIdClient.class);
     @Autowired
     @Qualifier("consumerManager")
     private ConsumerManager consumerManager;
@@ -71,8 +70,7 @@ public class OpenIdClient {
         if (identifier.indexOf('/') == -1) {
             identifier = oissoContextPath + identifier;
         }
-        HttpSession session = request.getSession(true);
-        session.setAttribute("identifier", identifier);
+        request.getSession().setAttribute("identifier", identifier);
         return "redirect:/userinfo";
     }
 
@@ -132,7 +130,7 @@ public class OpenIdClient {
     public String userinfoReturn(HttpServletRequest request) throws IllegalArgumentException, MessageException, DiscoveryException, AssociationException {
         HttpSession session = request.getSession();
         if (session == null) {
-            throw new IllegalAddException(messageAccessor.getMessage("client.userinfoReturn.exception1"));
+            throw new IllegalArgumentException(messageAccessor.getMessage("client.userinfoReturn.exception1"));
         } else {
             logger.debug("Start to processing open-id return. \bFirst thing is to get discovry information previous reservation,");
             DiscoveryInformation di = (DiscoveryInformation) session.getAttribute("discoveryInformation");

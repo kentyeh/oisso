@@ -10,17 +10,18 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openid4java.message.AuthSuccess;
 import org.openid4java.message.Message;
 import org.openid4java.message.ParameterList;
 import org.openid4java.server.ServerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class Oisso {
 
-    private static Logger logger = LoggerFactory.getLogger(Oisso.class);
+    private static final Logger logger = LogManager.getLogger(Oisso.class);
     public final static String ANONYMOUS_ACCOUNT = "anonymous";
     public final static String USER_INPUT_ACCOUNT = "account";
     public final static String USER_INFO = "userInfo";
@@ -38,14 +39,18 @@ public class Oisso {
     private ServerManager serverManager;
     @Autowired
     @Qualifier("userAttributeFactory")
-    UserAttributeFactory userDataFactory;
+    private UserAttributeFactory userDataFactory;
     @Value("#{extAttrSchema}")
-    Map<String, String> extAttrSchema;
+    private Map<String, String> extAttrSchema;
     @Autowired
     @Qualifier("messageAccessor")
-    MessageSourceAccessor messageAccessor;
+    private MessageSourceAccessor messageAccessor;
+    @Autowired
+    private SimpleUrlLogoutSuccessHandler logoutSuccessHandler;
     @Value("#{appProperies['localeParam']}")
-    String localParamName;
+    private String localParamName;
+    @Value("#{appProperies['logoutTargetUrlParameter']}")
+    private String logoutTargetUrl;
 
     @ExceptionHandler(UnsupportedEncodingException.class)
     public String handleUnsupportedEncodingException(HttpServletRequest request, UnsupportedEncodingException ex) {
@@ -58,8 +63,10 @@ public class Oisso {
         boolean chgLocal = localParamName != null && !localParamName.isEmpty() && request.getParameter(localParamName) != null
                 && !request.getParameter(localParamName).isEmpty();
         if (principal == null) {
+            logger.debug("***** principal is null");
             return request.getParameterMap().isEmpty() ? "login" : String.format("redirect:/%s%s", ANONYMOUS_ACCOUNT, CommonUtil.getParameters(request));
         } else if (request.getParameterMap().isEmpty() || (chgLocal && request.getParameterMap().size() == 1)) {
+            logger.debug("***** principal is {}",principal.getName());
             String account = principal.getName();
             HttpSession session = request.getSession(true);
             if (session.getAttribute(USER_INFO) == null) {
@@ -67,6 +74,7 @@ public class Oisso {
             }
             return "userinfo";
         } else {
+            logger.debug("***** redir to /{},{}",principal.getName(), CommonUtil.getParameters(request));
             return String.format("redirect:/%s%s", principal.getName(), CommonUtil.getParameters(request));
         }
     }
@@ -78,7 +86,7 @@ public class Oisso {
 
     @RequestMapping("/{account}")
     public String accountEndPoint(@PathVariable("account") String account, HttpServletRequest request, HttpServletResponse response, Principal principal) throws IOException {
-        logger.debug("accountEndPoint Account is {}", account);
+        logger.debug("accountEndPoint Account is {} ****\n{}-{}", account, request.getMethod(), CommonUtil.getParameters(request));
         if ("anonymous".equals(account)) {
             account = "";
         } else {
@@ -125,9 +133,7 @@ public class Oisso {
     @PreAuthorize("isAuthenticated()")
     public String returnAfterLogin(HttpServletRequest request, HttpServletResponse response, Principal principal) throws IOException {
         HttpSession session = request.getSession();
-        if (session != null) {
-            session.removeAttribute("loginId");
-        }
+        session.removeAttribute("loginId");
         ParameterList parameterList = (ParameterList) session.getAttribute("parameterList");
         String userId = principal.getName();
         String identifier = request.getParameter("account");

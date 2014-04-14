@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven />
     
-    <!-- i18n start-->
-    <bean id="messageAccessor" class="org.springframework.context.support.MessageSourceAccessor">
-        <constructor-arg  ref="messageSource"/>
-    </bean>
-    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basenames="messages" />
     <mvc:interceptors>
         <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="#{appProperies['localeParam']}"/>
     </mvc:interceptors>
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+    
+    <!-- i18n start-->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+    <bean id="messageAccessor" class="org.springframework.context.support.MessageSourceAccessor" c:_0-ref="messageSource"/>
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basenames="messages" />
     <!-- i18n end-->
     <mvc:view-controller view-name="login" path="/login"/>
     <mvc:resources mapping="/images/**" location="/images/"/>
     <mvc:default-servlet-handler default-servlet-name="oisso"/>
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:order="1">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="prefix" value="/WEB-INF/view/" />
         <property name="suffix" value=".jsp" />
     </bean>
 </beans>

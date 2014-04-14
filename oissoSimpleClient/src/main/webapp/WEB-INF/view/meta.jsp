@@ -1,11 +1,5 @@
 <%@ page pageEncoding="UTF-8" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%
-    response.setHeader("Expires", "-1");
-    response.setHeader("Pragma", "no-cache");
-    response.setHeader("Cache-Control", "no-cache");
-    response.setHeader("Content-Type", "text/html; charset=UTF-8");
-%>
 
 <%--Context path--%>
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
@@ -14,7 +8,7 @@
 <c:set var="fp">${pageContext.request.scheme}://${pageContext.request.serverName}<c:if test="${80 ne pageContext.request.localPort}">:${pageContext.request.localPort}</c:if>${cp}</c:set>
 
 <%--JQuery--%>
-<c:set var="jQueryVersion" value="1.6.3"/>
+<c:set var="jQueryVersion" value="2.1.0"/>
 <c:set var="jQuery"><script src="http://ajax.googleapis.com/ajax/libs/jquery/${jQueryVersion}/jquery.min.js"></script></c:set>
 <%--Modernizr 2--%>
 <c:set var="Modernizr"><script src="http://www.modernizr.com/downloads/modernizr-latest.js"></script></c:set>

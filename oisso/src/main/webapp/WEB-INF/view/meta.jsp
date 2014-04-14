@@ -1,12 +1,6 @@
 <%@ page pageEncoding="UTF-8" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
-<%
-  response.setHeader("Expires", "-1");
-  response.setHeader("Pragma", "no-cache");
-  response.setHeader("Cache-Control", "no-cache");
-  response.setHeader("Content-Type", "text/html; charset=UTF-8");
-%>
 <%--Context path--%>
 <c:set var="cp" value="${pageContext.request.contextPath}"/>
 

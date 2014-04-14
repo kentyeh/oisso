@@ -1,6 +1,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@include file="meta.jsp" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<spring:eval expression="@appProperies['sslPort']" var="sslPort"/>
 <c:if test="${not empty account}"><c:redirect url="/userinfo" /></c:if>
 <c:if test="${empty account}">
     <!doctype html>
@@ -41,7 +43,7 @@
                         <c:if test="${not empty requestScope.errorMessage}">${requestScope.errorMessage}</c:if>
                     </c:if>                                        
                 </div>
-                <form action="${cp}/j_spring_security_check" method="post">
+                <form action="https://${pageContext.request.serverName}:${sslPort}${cp}/j_spring_security_check" method="post">
                     <table border="0" align="center"><tbody>
                             <tr><td rowSpan="2">${logo}</td>
                             	  <td align="right"><label for="userid"><fmt:message key="login.account"/></label></td><td>

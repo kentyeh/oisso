@@ -12,131 +12,97 @@
 
     
     <properties>
+        <jndiDataSource>jdbc/OISSO</jndiDataSource>
+        <httpPort>8080</httpPort>
+        <sslPort>8443</sslPort>
+        <key.alias>tomcat</key.alias>
+        <key.cn>localhost</key.cn>
+        <key.pass>password</key.pass>
+        <oissowar>${basedir}/../oisso/target/oisso.war</oissowar>
+        <maven.war.webxml>${project.build.testOutputDirectory}/web.xml</maven.war.webxml>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.optimize>true</maven.compiler.optimize>
-        <spring.version>3.0.6.RELEASE</spring.version>
-        <spring.security.version>3.0.7.RELEASE</spring.security.version>
-        <openid4java.version>0.9.6</openid4java.version>
+        <spring.version>4.0.3.RELEASE</spring.version>
+        <spring.security.version>3.2.3.RELEASE</spring.security.version>
+        <openid4java.version>0.9.8</openid4java.version>
+        <log4j.version>2.0-rc1</log4j.version> 
+        <disruptor.version>3.2.1</disruptor.version>
+        <h2.version>1.3.176</h2.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>com.springsource.repository.bundles.release</id>
-            <name>EBR Spring Release Repository</name>
-            <url>http://repository.springsource.com/maven/bundles/release</url>
-        </repository>
-        <repository>
-            <id>com.springsource.repository.bundles.external</id>
-            <name>EBR External Release Repository</name>
-            <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
-        <repository>
-            <id>com.springsource.repository.bundles.milestone</id>
-            <name>EBR Spring Milestone Repository</name>
-            <!--url>http://repository.springsource.com/maven/bundles/milestone</url-->
-            <url>http://maven.springframework.org/milestone</url>
-        </repository>
-    </repositories>
-    
     <dependencies>
+        <!--Log4j2 start-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency>
+        <!--dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version> 
+        </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
+        </dependency>
+        <!--Log4j2 end-->
+        
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.context.support</artifactId>
+            <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web</artifactId>
+            <artifactId>spring-context-support</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.web.servlet</artifactId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
         </dependency>
         
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring.security.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-expression</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-tx</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--Spring Security start-->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
             <version>${spring.security.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.security</groupId>  
-                    <artifactId>spring-security-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>  
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring.security.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframewor</groupId>  
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework.security</groupId>  
-                    <artifactId>spring-security-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>  
-                    <artifactId>spring-web</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.security.version}</version>      
-            <exclusions>    
-                <!--exclusion>
-                    <groupId>org.springframework.security</groupId>
-                    <artifactId>spring-security-acl</artifactId>
-                </exclusion-->
-                <exclusion>
-                    <groupId>org.springframework</groupId>  
-                    <artifactId>spring-context-support</artifactId>
-                </exclusion>  
-                <exclusion>
-                    <groupId>org.springframework</groupId>  
-                    <artifactId>spring-jdbc</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>    
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openid4java</groupId>
+            <artifactId>openid4java</artifactId>
+            <version>0.9.8</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -144,50 +110,13 @@
             <version>${spring.security.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-web</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.openid4java</groupId>
-                    <artifactId>openid4java</artifactId>
+                    <artifactId>openid4java-nodeps</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openid4java</groupId>
-            <artifactId>openid4java-nodeps</artifactId>
-            <version>${openid4java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>1.9.15</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.1.1</version>
-        </dependency>
+        <!--Spring Security end-->
+        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -199,93 +128,152 @@
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency> 
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>0.9.29</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <!--log4j backward compatiable-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <!--JDBC for store user data start.-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.jdbc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <!--Config database driver here-->
-        <!--dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.0-801.jdbc4</version>
-        </dependency-->
-        <!--Database configuration end.-->
-        <!--JDBC for store user data end.-->
-        
-        <!--Test library dependencies start.-->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.1.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.3.158</version>  
-            <!--scope>test</scope-->
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>1.3.RC2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-legacy</artifactId>
-            <version>2.5.1</version>
-            <scope>test</scope>
-        </dependency> 
-        <!--Test library dependencies end.-->
     </dependencies>
     
     <build>
+        <finalName>${pom.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>*.sql</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${basedir}/src/test/resources</directory>
+                <filtering>true</filtering> 
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>tomcat-maven-plugin</artifactId>
-                <version>1.1</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
-                    <port>8081</port>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <showDeprecation>true</showDeprecation>
+                    <optimize>true</optimize>
                 </configuration>
-            </plugin>    
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>keytool-maven-plugin</artifactId>
+                <version>1.4</version>
+                <!--If you don't wnat to generate ssl keystore everytime 
+                    when jetty running , comment executions section,
+                    若是不要每次執行Jetty時都重新產生KeytStore，
+                    把以下的executeions 段落註解掉-->
+<!--                <executions>
+                    <execution>
+                        <id>clean</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <id>genkey</id>
+                        <goals>
+                            <goal>generateKeyPair</goal>
+                        </goals>
+                    </execution>
+                </executions>-->
+                <configuration>
+                    <keystore>${project.build.directory}/ssl.keystore</keystore>
+                    <dname>cn=${key.cn}</dname>
+                    <storepass>${key.pass}</storepass>
+                    <keypass>${key.pass}</keypass>
+                    <alias>${key.alias}</alias>
+                    <keyalg>RSA</keyalg>
+                    <validity>36525</validity>
+                </configuration>
+            </plugin>       
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.14.v20131031</version> 
+                <dependencies>   
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>${h2.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.atomikos</groupId>
+                        <artifactId>transactions-jdbc</artifactId>
+                        <version>3.9.3</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.atomikos</groupId>
+                        <artifactId>transactions-jta</artifactId>
+                        <version>3.9.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>jetty.port</name>
+                            <value>${httpPort}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>catalina.home</name>
+                            <value>${project.build.directory}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>jboss.server.home.dir</name>
+                            <value>${project.build.directory}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>env</name>
+                            <value>${env}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>org.jboss.logging.provider</name>
+                            <value>slf4j</value>
+                        </systemProperty>
+                    </systemProperties>          
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/${project.artifactId}</contextPath>
+                        <jettyEnvXml>${project.build.testOutputDirectory}/jetty-env.xml</jettyEnvXml>
+                        <descriptor>${project.build.testOutputDirectory}/web.xml</descriptor>
+                    </webApp>
+                    <contextHandlers>
+                        <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+                            <war>${oissowar}</war>
+                            <contextPath>/oisso</contextPath>
+                        </contextHandler>
+                    </contextHandlers>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>${httpPort}</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                        <connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
+                            <port>${sslPort}</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                            <keystore>${project.build.directory}/ssl.keystore</keystore>
+                            <password>${key.pass}</password>
+                            <keyPassword>${key.pass}</keyPassword>
+                        </connector>
+                    </connectors>
+                    <requestLog implementation="org.eclipse.jetty.server.NCSARequestLog">
+                        <filename>${project.build.directory}/logs/jetty_yyyy_mm_dd.request.log</filename>
+                        <retainDays>90</retainDays>
+                        <append>true</append>
+                        <extended>false</extended>
+                        <logTimeZone>GMT</logTimeZone>
+                    </requestLog>            
+                    <stopKey>HALT</stopKey>
+                    <stopPort>9966</stopPort>
+                </configuration>
+            </plugin> 
         </plugins>
-        <finalName>oissoSpringClient</finalName>
     </build>
 
 </project>

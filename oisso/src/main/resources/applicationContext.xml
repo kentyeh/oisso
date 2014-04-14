@@ -2,18 +2,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <!--Define JNDI dataSource-->
+    <jee:jndi-lookup id="dataSource" jndi-name="${jndiDataSource}" resource-ref="true" />
+    
     <!-- Define application's properties -->
     <util:map id="appProperies" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="sslPort" value="${sslPort}" />
+        <entry key="httpPort" value="${httpPort}" />
         <entry key="localeParam" value="locale" />
+        <entry key="logoutTargetUrlParameter" value="spring-security-redirect" />
     </util:map> 
     
-    <import resource="applicationContext-jdbc.xml"/>
     <import resource="applicationContext-mvc.xml"/>
     <import resource="applicationContext-security.xml"/>
     <context:annotation-config/>
@@ -44,7 +51,7 @@
         <property name="staticMethod" value="oisso.provider.CommonUtil.setSregSchema"/>
         <property name="arguments" ref="sregScheam"/>
     </bean>
-    <!--Exchange Extension Attributes,Customized define your property-->
+    <!--Exchange Extension Attributes,Customized define your property,自訂交換屬性-->
     <util:map id="extAttrSchema" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
         <entry key="roles" value="http://www.oisso.com/schema/1.0/roles" />
         <entry key="city" value="http://www.oisso.com/schema/1.0/city" />

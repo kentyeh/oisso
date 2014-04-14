@@ -1,34 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
-            xmlns:beans="http://www.springframework.org/schema/beans"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:p="http://www.springframework.org/schema/p"         
-            xmlns:util="http://www.springframework.org/schema/util"
-            xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:c="http://www.springframework.org/schema/c"
+             xmlns:p="http://www.springframework.org/schema/p"         
+             xmlns:util="http://www.springframework.org/schema/util"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     
     <global-method-security pre-post-annotations="enabled" secured-annotations="disabled" jsr250-annotations="disabled"/>
     
-    <!-- for Spring Security 3.1
-    <http pattern="/login" security="none" />
-    -->
-    <http auto-config="true" use-expressions="true" disable-url-rewriting="true">
+    <http pattern="/images/**" security="none" />
+    <http auto-config="true" use-expressions="true" disable-url-rewriting="true" entry-point-ref="authEntryPoint">
         <!--intercept-url parttern="/loginBeforeReturn" access="isAuthenticated()" requires-channel="any"/-->
-        <intercept-url pattern="/login" access="permitAll" requires-channel="any"/>
-        <intercept-url pattern="/j_spring_security_check" access="permitAll" requires-channel="any"/>
+        <intercept-url pattern="/login" access="permitAll" requires-channel="http"/>
+        <intercept-url pattern="/j_spring_security_check" access="permitAll" requires-channel="https"/>
         <intercept-url pattern="/j_spring_security_logout" access="permitAll" requires-channel="any"/>
-        <remember-me key="oisso"/>
+        <intercept-url pattern="/**" access="permitAll" requires-channel="any"/>
+        <remember-me key="${project.artifactId}"/>
         <form-login login-page="/login" authentication-failure-url="/login?authfailed=true" default-target-url="/" always-use-default-target="false"/>
         <logout invalidate-session="true" success-handler-ref="logoutSuccessHandler" logout-url="/j_spring_security_logout"/>
+        <!-- Don't migrate sessionn千萬不要在變更Sesssion-->
+        <session-management session-fixation-protection="none"/>
         <!--My suggesttion is not to use session management, because user may has many application need to login.
-        <session-management invalid-session-url="/login?cause=expired" >
+          建議不要使用Sessoin管控，因為現在可能會有多裝置進行授權
+        -->
+        <!--
+        <session-management  session-fixation-protection="none" invalid-session-url="/login?cause=expired" >
             <concurrency-control max-sessions="10" expired-url="/login?cause=sessionExceed"/>
         </session-management>
         -->
+        <headers>
+            <cache-control/>
+            <content-type-options/>
+            <frame-options/>
+            <hsts/>
+            <xss-protection/>
+        </headers>
+        <port-mappings>
+            <port-mapping http="${httpPort}" https="${sslPort}"/> 
+        </port-mappings>
+        <headers>
+            <cache-control/>
+            <content-type-options/>
+            <frame-options/>
+        </headers>
     </http>
     
-    <!--Authenticated by Database-->
+    <!--Authenticated by Database，使用資料庫記錄進行授權-->
     <authentication-manager alias="authenticationManager">
         <authentication-provider user-service-ref="userDetailService">
             <password-encoder hash="plaintext"/>
@@ -48,10 +68,10 @@
     </beans:bean>
     
     <!--Correct version (3.0.6+) not support spring-security-redirect parameter problem-->
-    <beans:bean id="logoutSuccessHandler" class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler" 
-        p:defaultTargetUrl="/login">
-        <beans:property name="targetUrlParameter">
-            <util:constant static-field="org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler.DEFAULT_TARGET_PARAMETER"/>
-        </beans:property>
-    </beans:bean>
+    <!--登出處理，因為3.0.6以後不再支援 spring-security-redirect 參數，所以要自行處理-->
+    <beans:bean id="logoutSuccessHandler" class="oisso.provider.OissoLogoutSuccessHandler" 
+                p:defaultTargetUrl="/" p:targetUrlParameter="#{appProperies['logoutTargetUrlParameter']}"/>
+    
+    <beans:bean id="authEntryPoint" class="oisso.provider.AjaxAwareLoginUrlAuthenticationEntryPoint"
+                c:loginFormUrl="/login"/>
 </beans:beans>

@@ -7,10 +7,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-
-    <import resource="applicationContext-mvc.xml"/>
+    <!--support JSR-250-->
+    <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
+    
     <context:property-placeholder location="classpath:system.properties"/>
-    <context:annotation-config/>
+    <import resource="applicationContext-mvc.xml"/>
 
     
     <bean id="consumerManager" class="org.openid4java.consumer.ConsumerManager" lazy-init="true">
@@ -23,6 +24,10 @@
             </bean>
         </property>
     </bean>
+    <util:map id="appProperies" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="httpPort" value="${httpPort}" />
+        <entry key="localeParam" value="locale" />
+    </util:map> 
     <!--Exchange Extension Attributes,Customed define your property-->
     <util:map id="extAttrSchema" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
         <entry key="roles" value="http://www.oisso.com/schema/1.0/roles" />

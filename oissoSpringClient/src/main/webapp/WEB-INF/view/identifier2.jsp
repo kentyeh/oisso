@@ -23,6 +23,7 @@
         <section data="page">
             <header style="text-align: center"><fmt:message key="identifier.caption"/></header>
                 <c:if test="${not empty param.cause or not empty param.authfailed or not empty requestScope.errorMessage}">
+                    <c:set var="hasInfo" value="true"/>
                     <div align="center" style="color:red;font-weight:bold;text-align: center" id="msgArea">
                         <c:if test="${'expired' eq param.cause}"><fmt:message key="identifier.expired"/></c:if>
                         <c:if test="${'sessionExceed' eq param.cause}"><fmt:message key="identifier.sessionExceed"/></c:if>
@@ -30,15 +31,16 @@
                         <c:if test="${not empty requestScope.errorMessage}">${requestScope.errorMessage}</c:if>                                        
                     </div>
                 </c:if>
-        <form action="${cp}/j_spring_openid_security_check" method="post">
-            <table align="center">
-                <tr><td><fmt:message key="identifier.Input"/> &quot;http://localhost:8080/oisso/admin&quot; <fmt:message key="identifier.or"/> &quot;http://localhost:8080/oisso/user&quot;</td></tr></thead>
-                <tbody><tr><td><input type="text" placeholder="<fmt:message key="identifier.idenifier.placeholder"/>" name="openid_identifier" id="identifier" required aria-required="true" style="width:100%" 
-                                      value="http&#58;&#47;&#47;localhost:8080&#47;oisso&#47;admin"/></td></tr></tbody>
-                <tfoot><tr><td align="center"><input type="submit"/></td></tr></tfoot>
-            </table>
-        </form>
+                <c:if test="${not empty hasInfo}">
+                    <form action="${cp}/j_spring_openid_security_check" method="post" style="text-align:center">
+                        <input type="hidden" name="openid_identifier" value="${applicationScope.directLoginUrl}"/>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <input type="submit" value="<fmt:message key="identifier.Login"/>"/>
+                    </form>
+                </c:if>
+                <c:if test="${empty hasInfo}">
+                    <c:redirect url="/j_spring_openid_security_check?openid_identifier=${applicationScope.directLoginUrl}"/>
+                </c:if>
         </section>
-        ${firstInputFocus}
     </body>
 </html>
