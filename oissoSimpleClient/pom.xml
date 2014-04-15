@@ -120,7 +120,7 @@
                     when jetty running , comment executions section,
                     若是不要每次執行Jetty時都重新產生KeytStore，
                     把以下的executeions 段落註解掉-->
-                <!--executions>
+                <executions>
                     <execution>
                         <id>clean</id>
                         <phase>generate-resources</phase>
@@ -135,7 +135,7 @@
                             <goal>generateKeyPair</goal>
                         </goals>
                     </execution>
-                </executions-->
+                </executions>
                 <configuration>
                     <keystore>${project.build.directory}/ssl.keystore</keystore>
                     <dname>cn=${key.cn}</dname>
